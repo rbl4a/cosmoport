@@ -22,6 +22,7 @@ public class Ship {
     @Column(name = "shipType")
     private ShipType shipType;
 
+    @Temporal(TemporalType.DATE)
     @Column(name = "prodDate")
     private Date prodDate;
 
