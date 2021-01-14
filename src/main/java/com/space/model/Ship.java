@@ -1,8 +1,5 @@
 package com.space.model;
 import javax.persistence.*;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Entity
@@ -19,6 +16,7 @@ public class Ship {
     @Column(name = "planet")
     private String planet;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "shipType")
     private ShipType shipType;
 
@@ -38,15 +36,6 @@ public class Ship {
     @Column(name = "rating")
     private Double rating;
 
-    private final DateFormat dateFormat = new SimpleDateFormat("yyyy");
-    private Date currentDate;
-    {
-        try {
-            currentDate = dateFormat.parse("3019");
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-    }
 
     public Ship(Long id, String name, String planet, ShipType shipType, Date prodDate, Boolean isUsed, Double speed, Integer crewSize) {
         this.id = id;
@@ -55,17 +44,6 @@ public class Ship {
         this.shipType = shipType;
         this.prodDate = prodDate;
         this.isUsed = isUsed;
-        this.speed = speed;
-        this.crewSize = crewSize;
-    }
-
-    public Ship(Long id, String name, String planet, ShipType shipType, Date prodDate, Double speed, Integer crewSize) {
-        this.id = id;
-        this.name = name;
-        this.planet = planet;
-        this.shipType = shipType;
-        this.prodDate = prodDate;
-        this.isUsed = false;
         this.speed = speed;
         this.crewSize = crewSize;
     }

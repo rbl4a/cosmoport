@@ -28,4 +28,9 @@ public class ShipRestController {
         return new ResponseEntity<>(ships, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/ships/count", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public ResponseEntity<Long> getCount() {
+        return new ResponseEntity<>(shipService.getCount(), HttpStatus.OK);
+    }
+
 }

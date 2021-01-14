@@ -20,4 +20,10 @@ public class ShipServiceImpl implements ShipService {
     public List<Ship> getAll() {
         return new ArrayList<>(shipRepository.findAll());
     }
+
+    @Override
+    public Long getCount() {
+        return shipRepository.count();
+    }
+
 }
