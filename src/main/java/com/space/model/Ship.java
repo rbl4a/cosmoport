@@ -4,11 +4,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "ship")
-public class Ship {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Ship extends ShipEntity {
 
     @Column(name = "name")
     private String name;
@@ -37,8 +33,7 @@ public class Ship {
     private Double rating;
 
 
-    public Ship(Long id, String name, String planet, ShipType shipType, Date prodDate, Boolean isUsed, Double speed, Integer crewSize) {
-        this.id = id;
+    public Ship(String name, String planet, ShipType shipType, Date prodDate, Boolean isUsed, Double speed, Integer crewSize) {
         this.name = name;
         this.planet = planet;
         this.shipType = shipType;

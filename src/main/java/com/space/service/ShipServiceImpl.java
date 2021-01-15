@@ -1,29 +1,44 @@
 package com.space.service;
 
+import com.space.exception.BadRequestIdException;
+import com.space.exception.NotFoundIdException;
 import com.space.model.Ship;
 import com.space.repository.ShipRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
 
-@Service("shipService")
+@Service
 public class ShipServiceImpl implements ShipService {
 
     @Autowired
     ShipRepository shipRepository;
 
+
     @Override
-    @Transactional(readOnly = true)
-    public List<Ship> getAll() {
-        return new ArrayList<>(shipRepository.findAll());
+    public Page<Ship> getAllShips(Specification<Ship> specification, Pageable pageable) {
+        return shipRepository.findAll(specification, pageable);
+    }
+    @Override
+    public Long shipCount(Specification<Ship> specification) {
+        return shipRepository.count(specification);
     }
 
     @Override
-    public Long getCount() {
-        return shipRepository.count();
+    public Ship getById(Long id) {
+        if (id <= 0) {
+            throw new BadRequestIdException();
+        }
+        return shipRepository.findById(id).orElseThrow(() -> new NotFoundIdException(String.format("Ship with id %s not found", id)));
     }
+
+    @Override
+    public Specification<Ship> filterByName(String name) {
+        return (root, query, cb) -> name == null ? null : cb.like(root.get("name"), "%" + name + "%");
+    }
+
 
 }
