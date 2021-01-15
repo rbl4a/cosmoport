@@ -60,8 +60,29 @@ public class ShipRestController {
 
 
     @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
-    public ResponseEntity<Long> getCount(@RequestParam(value = "name", required = false) String name) {
-        return new ResponseEntity<>(shipService.shipCount(Specification.where(shipService.filterByName(name))), HttpStatus.OK);
+    public ResponseEntity<Long> getCount(@RequestParam(value = "name", required = false) String name,
+                                         @RequestParam(value = "planet", required = false) String planet,
+                                         @RequestParam(value = "shipType", required = false) ShipType shipType,
+                                         @RequestParam(value = "after", required = false) Long after,
+                                         @RequestParam(value = "before", required = false) Long before,
+                                         @RequestParam(value = "isUsed", required = false) Boolean isUsed,
+                                         @RequestParam(value = "minSpeed", required = false) Double minSpeed,
+                                         @RequestParam(value = "maxSpeed", required = false) Double maxSpeed,
+                                         @RequestParam(value = "minCrewSize", required = false) Integer minCrewSize,
+                                         @RequestParam(value = "maxCrewSize", required = false) Integer maxCrewSize,
+                                         @RequestParam(value = "minRating", required = false) Double minRating,
+                                         @RequestParam(value = "maxRating", required = false) Double maxRating) {
+        Long count = shipService.shipCount(
+                Specification
+                        .where(shipService.filterByName(name))
+                        .and(shipService.filterByPlanet(planet))
+                        .and(shipService.filterByShipType(shipType))
+                        .and(shipService.filterByDate(after, before))
+                        .and(shipService.filterByIsUsed(isUsed))
+                        .and(shipService.filterByRating(minRating, maxRating))
+                        .and(shipService.filterByCrew(minCrewSize, maxCrewSize))
+                        .and(shipService.filterBySpeed(minSpeed, maxSpeed)));
+        return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
 }
