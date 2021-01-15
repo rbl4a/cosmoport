@@ -42,13 +42,21 @@ public class ShipRestController {
                                                @RequestParam(value = "maxRating", required = false) Double maxRating,
                                                @RequestParam(value = "pageNumber", required = false, defaultValue = "0") Integer pageNumber,
                                                @RequestParam(value = "pageSize", required = false, defaultValue = "3") Integer pageSize,
-                                               @RequestParam(value = "order", required = false, defaultValue = "ID") ShipOrder order)
-    {
-        Pageable pageable = PageRequest.of(pageNumber,pageSize, Sort.by(Sort.Direction.ASC, order.getFieldName()));
-        List<Ship> ships = shipService.getAllShips(Specification.where(shipService.filterByName(name)), pageable).getContent();
+                                               @RequestParam(value = "order", required = false, defaultValue = "ID") ShipOrder order) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize, Sort.by(Sort.Direction.ASC, order.getFieldName()));
+        List<Ship> ships = shipService.getAllShips(
+                Specification
+                        .where(shipService.filterByName(name))
+                        .and(shipService.filterByPlanet(planet))
+                        .and(shipService.filterByShipType(shipType))
+                        .and(shipService.filterByDate(after, before))
+                        .and(shipService.filterByIsUsed(isUsed))
+                        .and(shipService.filterByRating(minRating, maxRating))
+                        .and(shipService.filterByCrew(minCrewSize, maxCrewSize))
+                        .and(shipService.filterBySpeed(minSpeed, maxSpeed)), pageable)
+                .getContent();
         return new ResponseEntity<>(ships, HttpStatus.OK);
     }
-
 
 
     @GetMapping(value = "/count", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
