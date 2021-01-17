@@ -12,6 +12,7 @@ public interface ShipService {
     Page<Ship> getAllShips(Specification<Ship> specification, Pageable pageable);
     Long shipCount(Specification<Ship> specification);
     Ship getById(Long id);
+    void createShip(Ship ship);
     Specification<Ship> filterByName(String name);
     Specification<Ship> filterByPlanet(String planet);
     Specification<Ship> filterByDate(Long after, Long before);
@@ -20,4 +21,6 @@ public interface ShipService {
     Specification<Ship> filterByCrew(Integer minCrew, Integer maxCrew);
     Specification<Ship> filterByRating(Double minRating, Double maxRating);
     Specification<Ship> filterBySpeed(Double min, Double max);
+
+
 }

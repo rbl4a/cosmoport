@@ -11,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Calendar;
 import java.util.Date;
 
 
@@ -36,6 +39,60 @@ public class ShipServiceImpl implements ShipService {
             throw new BadRequestIdException();
         }
         return shipRepository.findById(id).orElseThrow(() -> new NotFoundIdException(String.format("Ship with id %s not found", id)));
+    }
+
+    @Override
+    public void createShip(Ship ship) {
+        checkLengthNameAndPlanet(ship.getName());
+        checkLengthNameAndPlanet(ship.getPlanet());
+        checkCrewSize(ship.getCrewSize());
+        checkSpeed(ship.getSpeed());
+        checkProdDate(ship.getProdDate());
+        if (ship.getUsed() == null) {
+            ship.setUsed(false);
+        }
+        ship.setRating(calculateRating(ship.getSpeed(), ship.getUsed(), ship.getProdDate()));
+        shipRepository.saveAndFlush(ship);
+    }
+
+    private Double calculateRating(Double speed, Boolean isUsed, Date prodDate) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(prodDate.getTime());
+        return 80 * speed * (Boolean.TRUE.equals(isUsed) ? 0.5 : 1) / (3019 - calendar.get(Calendar.YEAR) + 1);
+    }
+
+    private void checkProdDate(Date prodDate) {
+        if (prodDate == null) {
+            throw new BadRequestIdException();
+        }
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(prodDate.getTime());
+        if (calendar.get(Calendar.YEAR) < 2800 || calendar.get(Calendar.YEAR) > 3019) {
+            throw new BadRequestIdException();
+        }
+    }
+
+    private void checkSpeed(Double speed) {
+        if (speed == null) {
+            throw new BadRequestIdException("Speed should not been NULL");
+        }
+        double speedScale = BigDecimal.valueOf(speed).setScale(2, RoundingMode.HALF_UP).doubleValue();
+        if (speedScale < 0.01 || speedScale > 0.99) {
+            throw new BadRequestIdException("Speed has incorrect value (expected: 0,01...0,99)");
+        }
+    }
+
+    private void checkCrewSize(Integer crewSize) {
+        if (crewSize == null || crewSize < 1 || crewSize > 9999) {
+            throw new BadRequestIdException("Crew size has incorrect value (expected: 1...9999)");
+        }
+    }
+
+    private void checkLengthNameAndPlanet(String name) {
+        if (name == null || name.length() > 50 || name.equals("")) {
+            throw new BadRequestIdException("Length of name more than 50 characters");
+        }
     }
 
     @Override

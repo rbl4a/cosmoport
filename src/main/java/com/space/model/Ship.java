@@ -1,10 +1,17 @@
 package com.space.model;
+import org.springframework.beans.factory.annotation.Value;
+
 import javax.persistence.*;
 import java.util.Date;
+import java.util.Objects;
 
 @Entity
 @Table(name = "ship")
-public class Ship extends ShipEntity {
+public class Ship {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -33,7 +40,14 @@ public class Ship extends ShipEntity {
     private Double rating;
 
 
-    public Ship(String name, String planet, ShipType shipType, Date prodDate, Boolean isUsed, Double speed, Integer crewSize) {
+    public Ship(String name,
+                String planet,
+                ShipType shipType,
+                Date prodDate,
+                Boolean isUsed,
+                Double speed,
+                Integer crewSize,
+                Double rating) {
         this.name = name;
         this.planet = planet;
         this.shipType = shipType;
@@ -41,6 +55,7 @@ public class Ship extends ShipEntity {
         this.isUsed = isUsed;
         this.speed = speed;
         this.crewSize = crewSize;
+        this.rating = rating;
     }
 
     public Ship() {

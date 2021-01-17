@@ -85,4 +85,12 @@ public class ShipRestController {
         return new ResponseEntity<>(count, HttpStatus.OK);
     }
 
+
+    @PostMapping(value = "", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public ResponseEntity<Ship> createShip(@RequestBody Ship ship) {
+        shipService.createShip(ship);
+        return ResponseEntity.ok(ship);
+    }
+
 }
