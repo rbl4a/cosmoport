@@ -1,6 +1,6 @@
 package com.space.service;
 
-import com.space.exception.BadRequestIdException;
+import com.space.exception.BadRequestException;
 import com.space.exception.NotFoundIdException;
 import com.space.model.Ship;
 import com.space.model.ShipType;
@@ -42,7 +42,7 @@ public class ShipServiceImpl implements ShipService {
     @Override
     public Ship getById(Long id) {
         if (id <= 0) {
-            throw new BadRequestIdException("ID bellow zero");
+            throw new BadRequestException("ID bellow zero");
         }
         return shipRepository.findById(id).orElseThrow(() -> new NotFoundIdException("Ship with current id not found"));
     }
@@ -120,32 +120,32 @@ public class ShipServiceImpl implements ShipService {
 
     private void checkProdDate(Date prodDate) {
         if (prodDate == null) {
-            throw new BadRequestIdException("Production date is null");
+            throw new BadRequestException("Production date is null");
         }
         if (convertCalendarToInt(prodDate) < MIN_YEAR || convertCalendarToInt(prodDate) > CURRENT_YEAR) {
-            throw new BadRequestIdException("Production date out of range");
+            throw new BadRequestException("Production date out of range");
         }
     }
 
     private void checkSpeed(Double speed) {
         if (speed == null) {
-            throw new BadRequestIdException("Speed should not been NULL");
+            throw new BadRequestException("Speed should not been NULL");
         }
         double speedScale = BigDecimal.valueOf(speed).setScale(2, RoundingMode.HALF_UP).doubleValue();
         if (speedScale < MIN_SPEED || speedScale > MAX_SPEED) {
-            throw new BadRequestIdException("Speed has incorrect value (expected: 0,01...0,99)");
+            throw new BadRequestException("Speed has incorrect value (expected: 0,01...0,99)");
         }
     }
 
     private void checkCrewSize(Integer crewSize) {
         if (crewSize == null || crewSize < MIN_CREW_SIZE || crewSize > MAX_CREW_SIZE) {
-            throw new BadRequestIdException("Crew size has incorrect value (expected: 1...9999)");
+            throw new BadRequestException("Crew size has incorrect value (expected: 1...9999)");
         }
     }
 
     private void checkLengthNameAndPlanet(String name) {
         if (name == null || name.length() > 50 || name.equals("")) {
-            throw new BadRequestIdException("Length of name more than 50 characters");
+            throw new BadRequestException("Length of name more than 50 characters");
         }
     }
 
