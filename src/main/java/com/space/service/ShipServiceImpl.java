@@ -20,6 +20,12 @@ import java.util.Date;
 @Service
 public class ShipServiceImpl implements ShipService {
 
+    private static final int CURRENT_YEAR = 3019;
+    private static final int MIN_YEAR = 2800;
+    private static final double MIN_SPEED = 0.01;
+    private static final double MAX_SPEED = 0.99;
+    private static final int MIN_CREW_SIZE = 1;
+    private static final int MAX_CREW_SIZE = 9999;
     @Autowired
     ShipRepository shipRepository;
 
@@ -36,9 +42,9 @@ public class ShipServiceImpl implements ShipService {
     @Override
     public Ship getById(Long id) {
         if (id <= 0) {
-            throw new BadRequestIdException();
+            throw new BadRequestIdException("ID bellow zero");
         }
-        return shipRepository.findById(id).orElseThrow(() -> new NotFoundIdException(String.format("Ship with id %s not found", id)));
+        return shipRepository.findById(id).orElseThrow(() -> new NotFoundIdException("Ship with current id not found"));
     }
 
     @Override
@@ -102,7 +108,7 @@ public class ShipServiceImpl implements ShipService {
     }
 
     private Double calculateRating(Double speed, Boolean isUsed, Date prodDate) {
-        double result = 80 * speed * (Boolean.TRUE.equals(isUsed) ? 0.5 : 1) / (3019 - convertCalendarToInt(prodDate) + 1);
+        double result = 80 * speed * (Boolean.TRUE.equals(isUsed) ? 0.5 : 1) / (CURRENT_YEAR - convertCalendarToInt(prodDate) + 1);
         return  BigDecimal.valueOf(result).setScale(2, RoundingMode.HALF_UP).doubleValue();
     }
 
@@ -114,10 +120,10 @@ public class ShipServiceImpl implements ShipService {
 
     private void checkProdDate(Date prodDate) {
         if (prodDate == null) {
-            throw new BadRequestIdException();
+            throw new BadRequestIdException("Production date is null");
         }
-        if (convertCalendarToInt(prodDate) < 2800 || convertCalendarToInt(prodDate) > 3019) {
-            throw new BadRequestIdException();
+        if (convertCalendarToInt(prodDate) < MIN_YEAR || convertCalendarToInt(prodDate) > CURRENT_YEAR) {
+            throw new BadRequestIdException("Production date out of range");
         }
     }
 
@@ -126,13 +132,13 @@ public class ShipServiceImpl implements ShipService {
             throw new BadRequestIdException("Speed should not been NULL");
         }
         double speedScale = BigDecimal.valueOf(speed).setScale(2, RoundingMode.HALF_UP).doubleValue();
-        if (speedScale < 0.01 || speedScale > 0.99) {
+        if (speedScale < MIN_SPEED || speedScale > MAX_SPEED) {
             throw new BadRequestIdException("Speed has incorrect value (expected: 0,01...0,99)");
         }
     }
 
     private void checkCrewSize(Integer crewSize) {
-        if (crewSize == null || crewSize < 1 || crewSize > 9999) {
+        if (crewSize == null || crewSize < MIN_CREW_SIZE || crewSize > MAX_CREW_SIZE) {
             throw new BadRequestIdException("Crew size has incorrect value (expected: 1...9999)");
         }
     }
