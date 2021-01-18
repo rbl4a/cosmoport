@@ -13,6 +13,8 @@ public interface ShipService {
     Long shipCount(Specification<Ship> specification);
     Ship getById(Long id);
     void createShip(Ship ship);
+    void deleteShip(Long id);
+    Ship updateShip(Long id, Ship ship);
     Specification<Ship> filterByName(String name);
     Specification<Ship> filterByPlanet(String planet);
     Specification<Ship> filterByDate(Long after, Long before);

@@ -55,20 +55,68 @@ public class ShipServiceImpl implements ShipService {
         shipRepository.saveAndFlush(ship);
     }
 
+    @Override
+    public void deleteShip(Long id) {
+        Ship ship = getById(id);
+        shipRepository.delete(ship);
+    }
+
+    @Override
+    public Ship updateShip(Long id, Ship newShip) {
+        Ship baseShip = getById(id);
+
+        if (newShip.getName() != null) {
+            checkLengthNameAndPlanet(newShip.getName());
+            baseShip.setName(newShip.getName());
+        }
+
+        if (newShip.getPlanet() != null) {
+            checkLengthNameAndPlanet(newShip.getPlanet());
+            baseShip.setPlanet(newShip.getPlanet());
+        }
+
+        if (newShip.getShipType() != null) {
+            baseShip.setShipType(newShip.getShipType());
+        }
+
+        if (newShip.getProdDate() != null) {
+            checkProdDate(newShip.getProdDate());
+            baseShip.setProdDate(newShip.getProdDate());
+        }
+
+        if (newShip.getUsed() != null) {
+            baseShip.setUsed(newShip.getUsed());
+        }
+
+        if (newShip.getSpeed() != null) {
+            checkSpeed(newShip.getSpeed());
+            baseShip.setSpeed(newShip.getSpeed());
+        }
+
+        if (newShip.getCrewSize() != null) {
+            checkCrewSize(newShip.getCrewSize());
+            baseShip.setCrewSize(newShip.getCrewSize());
+        }
+        baseShip.setRating(calculateRating(baseShip.getSpeed(), baseShip.getUsed(), baseShip.getProdDate()));
+        return shipRepository.saveAndFlush(baseShip);
+    }
+
     private Double calculateRating(Double speed, Boolean isUsed, Date prodDate) {
+        double result = 80 * speed * (Boolean.TRUE.equals(isUsed) ? 0.5 : 1) / (3019 - convertCalendarToInt(prodDate) + 1);
+        return  BigDecimal.valueOf(result).setScale(2, RoundingMode.HALF_UP).doubleValue();
+    }
+
+    private int convertCalendarToInt(Date prodDate) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(prodDate.getTime());
-        return 80 * speed * (Boolean.TRUE.equals(isUsed) ? 0.5 : 1) / (3019 - calendar.get(Calendar.YEAR) + 1);
+        return calendar.get(Calendar.YEAR);
     }
 
     private void checkProdDate(Date prodDate) {
         if (prodDate == null) {
             throw new BadRequestIdException();
         }
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(prodDate.getTime());
-        if (calendar.get(Calendar.YEAR) < 2800 || calendar.get(Calendar.YEAR) > 3019) {
+        if (convertCalendarToInt(prodDate) < 2800 || convertCalendarToInt(prodDate) > 3019) {
             throw new BadRequestIdException();
         }
     }

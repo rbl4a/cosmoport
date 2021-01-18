@@ -124,4 +124,5 @@ public class Ship {
     public void setRating(Double rating) {
         this.rating = rating;
     }
+
 }

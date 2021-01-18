@@ -93,4 +93,17 @@ public class ShipRestController {
         return ResponseEntity.ok(ship);
     }
 
+    @PostMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @ResponseBody
+    public ResponseEntity<Ship> updateShip(@PathVariable Long id, @RequestBody Ship ship) {
+        Ship result = shipService.updateShip(id, ship);
+        return ResponseEntity.ok(result);
+    }
+
+    @DeleteMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    public void deleteShip(@PathVariable Long id) {
+        shipService.deleteShip(id);
+        ResponseEntity.ok();
+    }
+
 }
